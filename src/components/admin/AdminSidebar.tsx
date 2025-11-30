@@ -27,9 +27,9 @@ export default function AdminSidebar() {
       {/* Mobile Menu Button */}
       <button 
         onClick={toggleSidebar}
-        className="md:hidden fixed top-4 left-4 z-50 p-2 bg-gray-800 rounded-lg text-white border border-gray-700 shadow-lg"
+        className={`md:hidden fixed top-4 left-4 z-50 p-2 bg-gray-800 rounded-lg text-white border border-gray-700 shadow-lg ${isOpen ? 'hidden' : 'block'}`}
       >
-        {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        <Menu className="w-6 h-6" />
       </button>
 
       {/* Overlay */}
@@ -52,7 +52,9 @@ export default function AdminSidebar() {
             OASIS <span className="text-primary">FITNESS ACADEMY</span>
           </h1>
           {/* Close button for mobile inside sidebar (optional, but good for clarity) */}
-
+          <button onClick={closeSidebar} className="md:hidden text-gray-400 hover:text-white">
+            <X className="w-5 h-5" />
+          </button>
         </div>
         
         <nav className="flex-1 p-4 space-y-2 overflow-y-auto">

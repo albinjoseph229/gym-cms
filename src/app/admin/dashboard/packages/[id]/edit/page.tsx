@@ -98,7 +98,7 @@ export default function EditPackagePage() {
         <h1 className="text-3xl font-bold">Edit Package</h1>
       </div>
 
-      <div className="bg-gray-800 rounded-xl border border-gray-700 p-8 max-w-6xl">
+      <div className="bg-gray-800 rounded-xl border border-gray-700 p-4 md:p-8 max-w-6xl">
         <form onSubmit={handleSubmit} className="space-y-8">
           
           <div>
@@ -182,7 +182,7 @@ export default function EditPackagePage() {
             <button 
               type="submit" 
               disabled={loading}
-              className="bg-primary hover:bg-orange-600 text-white px-8 py-3 rounded-lg font-bold transition-colors disabled:opacity-50"
+              className="w-full md:w-auto bg-primary hover:bg-orange-600 text-white px-8 py-3 rounded-lg font-bold transition-colors disabled:opacity-50"
             >
               {loading ? 'Saving...' : 'Update Package'}
             </button>
