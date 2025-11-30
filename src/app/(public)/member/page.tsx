@@ -37,12 +37,28 @@ export default function MemberStatusPage() {
   };
 
   return (
-    <div>
-      <PageHeader 
-        title="Member Status" 
-        subtitle="Check your membership validity and profile details."
-        bgImage="https://images.unsplash.com/photo-1574680096141-1cddd32e0340?q=80&w=1469&auto=format&fit=crop"
-      />
+    <div className="bg-[#0a0a0a] min-h-screen">
+      {/* Page Header with inline background */}
+      <div className="relative bg-gray-900 py-8 md:py-12 overflow-hidden">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 z-0 bg-cover bg-center opacity-30"
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1470&auto=format&fit=crop')`
+          }}
+        ></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/80 to-transparent z-0"></div>
+
+        <div className="container mx-auto px-4 relative z-10 text-center">
+          <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-2 uppercase tracking-tight">
+            MEMBER STATUS
+          </h1>
+          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+            Check your membership validity and profile details.
+          </p>
+          <div className="w-24 h-1 bg-primary mx-auto mt-4"></div>
+        </div>
+      </div>
 
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-2xl mx-auto">
