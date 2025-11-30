@@ -49,7 +49,7 @@ export default function AdminSidebar() {
       `}>
         <div className="p-6 border-b border-gray-700 flex justify-between items-center">
           <h1 className="text-2xl font-extrabold uppercase tracking-tighter text-white">
-            OASIS <span className="text-primary">ADMIN</span>
+            OASIS <span className="text-primary">FITNESS ACADEMY</span>
           </h1>
           {/* Close button for mobile inside sidebar (optional, but good for clarity) */}
           <button onClick={closeSidebar} className="md:hidden text-gray-400 hover:text-white">

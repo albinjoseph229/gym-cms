@@ -159,7 +159,7 @@ export default function IDCardPage() {
         >
           {/* Header */}
           <div className="p-6 text-center" style={{ backgroundColor: '#ff4500' }}>
-            <h2 className="text-2xl font-extrabold uppercase tracking-widest" style={{ color: '#ffffff' }}>OASIS</h2>
+            <h2 className="text-2xl font-extrabold uppercase tracking-widest" style={{ color: '#ffffff' }}>OASIS FITNESS ACADEMY</h2>
             <p className="text-xs font-bold tracking-widest opacity-80" style={{ color: '#ffffff' }}>FITNESS CLUB</p>
           </div>
 

@@ -34,7 +34,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <Link href="/" className="text-3xl font-extrabold uppercase tracking-tighter mb-6 block">
-              VITALITY <span className="text-primary">GYM</span>
+              OASIS <span className="text-primary">FITNESS ACADEMY</span>
             </Link>
             <p className="text-gray-400 mb-8 leading-relaxed">
               The most effective routine advice for your health. We have a great deal of experience with fitness.
@@ -108,7 +108,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-900 pt-8 flex flex-col md:flex-row justify-between items-center text-gray-500 text-sm">
-          <p>&copy; {new Date().getFullYear()} Vitality Gym. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Oasis Fitness Academy. All rights reserved.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <Link href="#" className="hover:text-white">Privacy Policy</Link>
             <Link href="#" className="hover:text-white">Terms of Service</Link>

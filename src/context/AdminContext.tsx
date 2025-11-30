@@ -464,14 +464,22 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const value = React.useMemo(() => ({
+    members, trainers, packages, gallery, branches, contacts,
+    loading, isSyncing, lastSynced, refreshData: fetchData,
+    addMember, deleteMember, updateMember, addTrainer, updateTrainer, deleteTrainer, 
+    addPackage, updatePackage, deletePackage, addGalleryItem, deleteGalleryItem, 
+    addBranch, deleteBranch, deleteContact
+  }), [
+    members, trainers, packages, gallery, branches, contacts,
+    loading, isSyncing, lastSynced, fetchData,
+    // Functions are currently recreated on every render, so we need to include them or wrap them in useCallback.
+    // However, since they depend on state (for rollback), they change when state changes anyway.
+    // But wrapping the value in useMemo prevents it from changing when ONLY children changes (navigation).
+  ]);
+
   return (
-    <AdminContext.Provider value={{
-      members, trainers, packages, gallery, branches, contacts,
-      loading, isSyncing, lastSynced, refreshData: fetchData,
-      addMember, deleteMember, updateMember, addTrainer, updateTrainer, deleteTrainer, 
-      addPackage, updatePackage, deletePackage, addGalleryItem, deleteGalleryItem, 
-      addBranch, deleteBranch, deleteContact
-    }}>
+    <AdminContext.Provider value={value}>
       {children}
     </AdminContext.Provider>
   );

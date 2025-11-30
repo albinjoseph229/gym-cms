@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Oasis Fitness Club",
-  description: "Premium Gym in Wayand District - Valad, Vellamunda, Korome",
+  title: "Oasis Fitness Academy",
+  description: "Premium Fitness Academy in Wayand District - Valad, Vellamunda, Korome",
 };
 
 export default function RootLayout({

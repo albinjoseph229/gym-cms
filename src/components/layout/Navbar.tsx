@@ -20,7 +20,7 @@ export default function Navbar() {
     <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-black/90 backdrop-blur-md py-4' : 'bg-transparent py-6'}`}>
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Link href="/" className="text-2xl font-extrabold uppercase tracking-tighter text-white">
-          VITALITY <span className="text-primary">GYM</span>
+          OASIS <span className="text-primary">FITNESS ACADEMY</span>
         </Link>
 
         {/* Desktop Menu */}

@@ -19,7 +19,7 @@ export default function Home() {
 
         <div className="container mx-auto px-4 relative z-10 pt-20">
           <div className="max-w-3xl">
-            <p className="text-primary font-bold tracking-widest uppercase mb-4 animate-fade-in-up">Welcome to Vitality Gym</p>
+            <p className="text-primary font-bold tracking-widest uppercase mb-4 animate-fade-in-up">Welcome to Oasis Fitness Academy</p>
             <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight uppercase animate-fade-in-up delay-100">
               Fit to <span className="text-primary">Keep</span><br />
               Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-200 to-gray-500">Skin</span>
@@ -151,7 +151,7 @@ export default function Home() {
         <div className="container mx-auto px-4 relative z-10 text-center">
           <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-6 uppercase">Ready to Transform?</h2>
           <p className="text-white/80 text-xl mb-10 max-w-2xl mx-auto">
-            Don't wait for tomorrow. Start your fitness journey today with Vitality Gym.
+            Don't wait for tomorrow. Start your fitness journey today with Oasis Fitness Academy.
           </p>
           <Link href="/member" className="bg-black text-white px-10 py-4 rounded-full font-bold uppercase tracking-widest hover:bg-gray-900 transition-all transform hover:scale-105 inline-flex items-center">
             Join The Club <ArrowRight className="ml-2 w-5 h-5" />
