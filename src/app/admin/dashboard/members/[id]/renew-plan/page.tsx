@@ -105,72 +105,79 @@ export default function RenewPlanPage() {
           <p className="text-gray-400">ID: {formData.id}</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-8">
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">Select New Plan</label>
-            <select 
-              name="currentPlan"
-              value={formData.currentPlan}
-              onChange={handleChange}
-              required
-              className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-            >
-              <option value="">Select Plan</option>
-              {packages.map(pkg => (
-                <option key={pkg.id} value={pkg.name}>{pkg.name} ({pkg.durationDays} days)</option>
-              ))}
-            </select>
+            <h3 className="text-lg font-semibold text-white mb-4">Plan Selection</h3>
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Select New Plan</label>
+                <select 
+                  name="currentPlan"
+                  value={formData.currentPlan}
+                  onChange={handleChange}
+                  required
+                  className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                >
+                  <option value="">Select Plan</option>
+                  {packages.map(pkg => (
+                    <option key={pkg.id} value={pkg.name}>{pkg.name} ({pkg.durationDays} days)</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-2">Plan Start Date</label>
+                  <input 
+                    type="date" 
+                    name="planStartDate"
+                    value={formData.planStartDate}
+                    onChange={handleChange}
+                    required
+                    className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-2">Plan Expiry Date</label>
+                  <input 
+                    type="date" 
+                    name="planExpiryDate"
+                    value={formData.planExpiryDate}
+                    onChange={handleChange}
+                    required
+                    className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Plan Start Date</label>
-              <input 
-                type="date" 
-                name="planStartDate"
-                value={formData.planStartDate}
-                onChange={handleChange}
-                required
-                className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Plan Expiry Date</label>
-              <input 
-                type="date" 
-                name="planExpiryDate"
-                value={formData.planExpiryDate}
-                onChange={handleChange}
-                required
-                className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-              />
-            </div>
-          </div>
-
-          <div className="pt-4 border-t border-gray-700">
-            <h3 className="text-lg font-bold mb-4">Payment Details</h3>
+          <div className="pt-6 border-t border-gray-700">
+            <h3 className="text-lg font-semibold text-white mb-4">Payment Details</h3>
             
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-400 mb-2">Plan Fee Amount</label>
-              <input 
-                type="number" 
-                name="planFee"
-                value={formData.planFee || 0}
-                onChange={handleChange}
-                className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-              />
-            </div>
+            <div className="bg-gray-900/50 p-6 rounded-xl border border-gray-700 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Plan Fee Amount</label>
+                <input 
+                  type="number" 
+                  name="planFee"
+                  value={formData.planFee || 0}
+                  onChange={handleChange}
+                  className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                />
+              </div>
 
-            <div className="flex items-center mb-4">
-              <input 
-                type="checkbox" 
-                name="planFeePaid"
-                id="planFeePaid"
-                checked={formData.planFeePaid || false}
-                onChange={handleChange}
-                className="w-5 h-5 text-primary rounded border-gray-600 focus:ring-primary bg-gray-900"
-              />
-              <label htmlFor="planFeePaid" className="ml-3 text-white">Plan Fee Paid?</label>
+              <div className="flex items-center">
+                <input 
+                  type="checkbox" 
+                  name="planFeePaid"
+                  id="planFeePaid"
+                  checked={formData.planFeePaid || false}
+                  onChange={handleChange}
+                  className="w-5 h-5 text-primary rounded border-gray-600 focus:ring-primary bg-gray-900"
+                />
+                <label htmlFor="planFeePaid" className="ml-3 text-white">Mark Plan Fee as Paid</label>
+              </div>
             </div>
           </div>
 

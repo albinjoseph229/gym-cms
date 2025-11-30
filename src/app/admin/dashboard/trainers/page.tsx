@@ -3,16 +3,40 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useAdmin } from '@/context/AdminContext';
+import { useToast } from '@/context/ToastContext';
 import { Plus, Search, Trash2, Edit, Instagram, Phone } from 'lucide-react';
+import ConfirmationModal from '@/components/ui/ConfirmationModal';
 
 export default function TrainersPage() {
   const { trainers, loading, deleteTrainer } = useAdmin();
+  const { addToast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Modal State
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [trainerToDelete, setTrainerToDelete] = useState<string | null>(null);
 
   const filteredTrainers = trainers.filter(trainer => 
     trainer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     trainer.specialization.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const confirmDelete = (id: string) => {
+    setTrainerToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (trainerToDelete) {
+      const success = await deleteTrainer(trainerToDelete);
+      if (success) {
+        addToast('Trainer deleted successfully', 'success');
+      } else {
+        addToast('Failed to delete trainer', 'error');
+      }
+      setTrainerToDelete(null);
+    }
+  };
 
   return (
     <div>
@@ -74,11 +98,7 @@ export default function TrainersPage() {
                   <Edit className="w-5 h-5" />
                 </Link>
                 <button 
-                  onClick={() => {
-                    if (confirm('Are you sure you want to delete this trainer?')) {
-                      deleteTrainer(trainer.id);
-                    }
-                  }}
+                  onClick={() => confirmDelete(trainer.id)}
                   className="p-2 text-red-400 hover:bg-red-400/10 rounded-full transition-colors"
                 >
                   <Trash2 className="w-5 h-5" />
@@ -88,6 +108,16 @@ export default function TrainersPage() {
           ))}
         </div>
       )}
+
+      <ConfirmationModal 
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+        title="Delete Trainer"
+        message="Are you sure you want to delete this trainer? This action cannot be undone."
+        confirmText="Delete"
+        isDangerous={true}
+      />
     </div>
   );
 }

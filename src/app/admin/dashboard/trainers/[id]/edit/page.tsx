@@ -98,112 +98,118 @@ export default function EditTrainerPage() {
         <h1 className="text-3xl font-bold">Edit Trainer</h1>
       </div>
 
-      <div className="bg-gray-800 rounded-xl border border-gray-700 p-8 max-w-2xl">
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="bg-gray-800 rounded-xl border border-gray-700 p-8 max-w-6xl">
+        <form onSubmit={handleSubmit} className="space-y-8">
+          
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">Trainer Name</label>
-            <input 
-              type="text" 
-              name="name"
-              required
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">Specialization</label>
-            <input 
-              type="text" 
-              name="specialization"
-              required
-              value={formData.specialization}
-              onChange={handleChange}
-              placeholder="e.g. Bodybuilding, Yoga, Cardio"
-              className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">Experience</label>
-            <input 
-              type="text" 
-              name="experience"
-              required
-              value={formData.experience}
-              onChange={handleChange}
-              placeholder="e.g. 5 Years"
-              className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">Branch</label>
-            <select 
-              name="branch"
-              value={isCustomBranch ? 'Other' : formData.branch}
-              onChange={handleChange}
-              className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary mb-3"
-            >
-              <option value="">Select Branch</option>
-              {branches.map(branch => (
-                <option key={branch.id} value={branch.name}>{branch.name}</option>
-              ))}
-              <option value="Other">Other (Custom Input)</option>
-            </select>
-            
-            {isCustomBranch && (
-              <input 
-                type="text" 
-                name="customBranch"
-                required
-                value={formData.branch}
-                onChange={handleCustomBranchChange}
-                placeholder="Enter custom branch name (e.g. Multiple Branches)"
-                className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary animate-in fade-in slide-in-from-top-2"
-              />
-            )}
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">Description</label>
-            <textarea 
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Brief bio about the trainer..."
-              className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary h-24"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">Instagram Profile</label>
-            <input 
-              type="url" 
-              name="instagramProfile"
-              value={formData.instagramProfile}
-              onChange={handleChange}
-              placeholder="https://instagram.com/username"
-              className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">Contact Number</label>
-            <input 
-              type="tel" 
-              name="contactNumber"
-              value={formData.contactNumber}
-              onChange={handleChange}
-              placeholder="+91 98765 43210"
-              className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">Photo URL (Optional)</label>
-            <input 
-              type="url" 
-              name="photoUrl"
-              value={formData.photoUrl}
-              onChange={handleChange}
-              placeholder="https://example.com/trainer.jpg"
-              className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-            />
+            <h3 className="text-xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">Trainer Details</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Trainer Name</label>
+                <input 
+                  type="text" 
+                  name="name"
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Specialization</label>
+                <input 
+                  type="text" 
+                  name="specialization"
+                  required
+                  value={formData.specialization}
+                  onChange={handleChange}
+                  placeholder="e.g. Bodybuilding, Yoga, Cardio"
+                  className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Experience</label>
+                <input 
+                  type="text" 
+                  name="experience"
+                  required
+                  value={formData.experience}
+                  onChange={handleChange}
+                  placeholder="e.g. 5 Years"
+                  className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Branch</label>
+                <select 
+                  name="branch"
+                  value={isCustomBranch ? 'Other' : formData.branch}
+                  onChange={handleChange}
+                  className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary mb-3"
+                >
+                  <option value="">Select Branch</option>
+                  {branches.map(branch => (
+                    <option key={branch.id} value={branch.name}>{branch.name}</option>
+                  ))}
+                  <option value="Other">Other (Custom Input)</option>
+                </select>
+                
+                {isCustomBranch && (
+                  <input 
+                    type="text" 
+                    name="customBranch"
+                    required
+                    value={formData.branch}
+                    onChange={handleCustomBranchChange}
+                    placeholder="Enter custom branch name"
+                    className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary animate-in fade-in slide-in-from-top-2"
+                  />
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Contact Number</label>
+                <input 
+                  type="tel" 
+                  name="contactNumber"
+                  value={formData.contactNumber}
+                  onChange={handleChange}
+                  placeholder="+91 98765 43210"
+                  className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Instagram Profile</label>
+                <input 
+                  type="url" 
+                  name="instagramProfile"
+                  value={formData.instagramProfile}
+                  onChange={handleChange}
+                  placeholder="https://instagram.com/username"
+                  className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                />
+              </div>
+              <div className="md:col-span-2 lg:col-span-3">
+                <label className="block text-sm font-medium text-gray-400 mb-2">Photo URL (Optional)</label>
+                <input 
+                  type="url" 
+                  name="photoUrl"
+                  value={formData.photoUrl}
+                  onChange={handleChange}
+                  placeholder="https://example.com/trainer.jpg"
+                  className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                />
+              </div>
+              <div className="md:col-span-2 lg:col-span-3">
+                <label className="block text-sm font-medium text-gray-400 mb-2">Description</label>
+                <textarea 
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  placeholder="Brief bio about the trainer..."
+                  className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary h-24"
+                />
+              </div>
+            </div>
           </div>
 
           <div className="flex justify-end pt-6">

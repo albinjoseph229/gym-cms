@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAdmin } from '@/context/AdminContext';
-import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
+import { ChevronLeft } from 'lucide-react';
+import { useAdmin } from '@/context/AdminContext';
+import { useToast } from '@/context/ToastContext';
 
 export default function AddMemberPage() {
   const router = useRouter();
   const { addMember, packages, branches } = useAdmin();
+  const { addToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
@@ -62,13 +64,13 @@ export default function AddMemberPage() {
 
       // Recalculate expiry if plan or start date changes
       if (name === 'currentPlan') {
-        const selectedPackage = packages.find(p => p.name === value);
+        const selectedPackage = packages.find((p: any) => p.name === value);
         if (selectedPackage) {
           newData.planExpiryDate = calculateExpiry(newData.planStartDate, selectedPackage.durationDays);
           newData.planFee = selectedPackage.price;
         }
       } else if (name === 'planStartDate') {
-        const selectedPackage = packages.find(p => p.name === newData.currentPlan);
+        const selectedPackage = packages.find((p: any) => p.name === newData.currentPlan);
         if (selectedPackage) {
           newData.planExpiryDate = calculateExpiry(value, selectedPackage.durationDays);
         }
@@ -98,13 +100,14 @@ export default function AddMemberPage() {
       });
 
       if (success) {
+        addToast('Member added successfully', 'success');
         router.push('/admin/dashboard/members');
       } else {
-        alert('Failed to add member');
+        addToast('Failed to add member', 'error');
       }
     } catch (error) {
       console.error(error);
-      alert('An error occurred');
+      addToast('An error occurred', 'error');
     } finally {
       setLoading(false);
     }
@@ -119,186 +122,212 @@ export default function AddMemberPage() {
         <h1 className="text-3xl font-bold">Add New Member</h1>
       </div>
 
-      <div className="bg-gray-800 rounded-xl border border-gray-700 p-8 max-w-4xl">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Full Name</label>
-              <input 
-                type="text" 
-                name="fullName"
-                required
-                value={formData.fullName}
-                onChange={handleChange}
-                className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Mobile Number</label>
-              <input 
-                type="tel" 
-                name="mobileNumber"
-                required
-                value={formData.mobileNumber}
-                onChange={handleChange}
-                className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Email</label>
-              <input 
-                type="email" 
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Date of Birth</label>
-              <input 
-                type="date" 
-                name="dateOfBirth"
-                value={formData.dateOfBirth}
-                onChange={handleChange}
-                className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Branch</label>
-              <select 
-                name="branchName"
-                value={formData.branchName}
-                onChange={handleChange}
-                className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-              >
-                <option value="">Select Branch</option>
-                {branches.map(branch => (
-                  <option key={branch.id} value={branch.name}>{branch.name}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Plan</label>
-              <select 
-                name="currentPlan"
-                value={formData.currentPlan}
-                onChange={handleChange}
-                className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-              >
-                <option value="">Select Plan</option>
-                {packages.map(pkg => (
-                  <option key={pkg.id} value={pkg.name}>{pkg.name} ({pkg.durationDays} days)</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Plan Start Date</label>
-              <input 
-                type="date" 
-                name="planStartDate"
-                value={formData.planStartDate}
-                onChange={handleChange}
-                className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Plan Expiry Date</label>
-              <input 
-                type="date" 
-                name="planExpiryDate"
-                value={formData.planExpiryDate}
-                onChange={handleChange}
-                className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-              />
+      <div className="bg-gray-800 rounded-xl border border-gray-700 p-8 max-w-6xl">
+        <form onSubmit={handleSubmit} className="space-y-8">
+          
+          {/* Personal Details Section */}
+          <div>
+            <h3 className="text-xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">Personal Details</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Full Name</label>
+                <input 
+                  type="text" 
+                  name="fullName"
+                  required
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Mobile Number</label>
+                <input 
+                  type="tel" 
+                  name="mobileNumber"
+                  required
+                  value={formData.mobileNumber}
+                  onChange={handleChange}
+                  className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Email</label>
+                <input 
+                  type="email" 
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Date of Birth</label>
+                <input 
+                  type="date" 
+                  name="dateOfBirth"
+                  value={formData.dateOfBirth}
+                  onChange={handleChange}
+                  className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Branch</label>
+                <select 
+                  name="branchName"
+                  value={formData.branchName}
+                  onChange={handleChange}
+                  className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                >
+                  <option value="">Select Branch</option>
+                  {branches.map((branch: any) => (
+                    <option key={branch.id} value={branch.name}>{branch.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                 <label className="block text-sm font-medium text-gray-400 mb-2">Profile Photo URL</label>
+                 <input 
+                   type="url" 
+                   name="profilePhotoUrl"
+                   value={formData.profilePhotoUrl}
+                   onChange={handleChange}
+                   placeholder="https://example.com/photo.jpg"
+                   className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                 />
+              </div>
             </div>
           </div>
 
-          <div className="pt-6 border-t border-gray-700">
-            <h3 className="text-lg font-bold mb-4">Fees & Status</h3>
-            
-            <div className="flex items-center mb-4">
-              <input 
-                type="checkbox" 
-                name="planFeePaid"
-                id="planFeePaid"
-                checked={formData.planFeePaid}
-                onChange={handleChange}
-                className="w-5 h-5 text-primary rounded border-gray-600 focus:ring-primary bg-gray-900"
-              />
-              <label htmlFor="planFeePaid" className="ml-3 text-white">Plan Fee Paid?</label>
+          {/* Plan Details Section */}
+          <div>
+            <h3 className="text-xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">Plan Details</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Plan</label>
+                <select 
+                  name="currentPlan"
+                  value={formData.currentPlan}
+                  onChange={handleChange}
+                  className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                >
+                  <option value="">Select Plan</option>
+                  {packages.map((pkg: any) => (
+                    <option key={pkg.id} value={pkg.name}>{pkg.name} ({pkg.durationDays} days)</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Plan Start Date</label>
+                <input 
+                  type="date" 
+                  name="planStartDate"
+                  value={formData.planStartDate}
+                  onChange={handleChange}
+                  className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Plan Expiry Date</label>
+                <input 
+                  type="date" 
+                  name="planExpiryDate"
+                  value={formData.planExpiryDate}
+                  onChange={handleChange}
+                  className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                />
+              </div>
             </div>
+          </div>
 
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-400 mb-2">Plan Fee Amount</label>
-              <input 
-                type="number" 
-                name="planFee"
-                value={formData.planFee}
-                onChange={handleChange}
-                className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-              />
-            </div>
-
-            <div className="flex items-center mb-4">
-              <input 
-                type="checkbox" 
-                name="annualFeePaid"
-                id="annualFeePaid"
-                checked={formData.annualFeePaid}
-                onChange={handleChange}
-                className="w-5 h-5 text-primary rounded border-gray-600 focus:ring-primary bg-gray-900"
-              />
-              <label htmlFor="annualFeePaid" className="ml-3 text-white">Annual Membership Fee Paid?</label>
-            </div>
-
-            {formData.annualFeePaid && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Payment Date</label>
-                  <input 
-                    type="date" 
-                    name="feeValidityDate" 
-                    value={formData.feeValidityDate}
-                    onChange={handleChange}
-                    className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Date when the fee was paid.</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Annual Fee Expiry Date</label>
-                  <input 
-                    type="date" 
-                    name="annualFeeExpiryDate" 
-                    value={formData.annualFeeExpiryDate}
-                    onChange={handleChange}
-                    className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Valid until (defaults to 1 year).</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Annual Fee Amount</label>
-                  <input 
-                    type="number" 
-                    name="annualFeeAmount" 
-                    value={formData.annualFeeAmount}
-                    onChange={handleChange}
-                    className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-                  />
+          {/* Fees & Status Section */}
+          <div>
+            <h3 className="text-xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">Fees & Status</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              
+              {/* Plan Fee */}
+              <div className="bg-gray-900/50 p-6 rounded-xl border border-gray-700">
+                <h4 className="text-lg font-medium text-white mb-4">Plan Fee</h4>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-2">Amount</label>
+                    <input 
+                      type="number" 
+                      name="planFee"
+                      value={formData.planFee}
+                      onChange={handleChange}
+                      className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                    />
+                  </div>
+                  <div className="flex items-center">
+                    <input 
+                      type="checkbox" 
+                      name="planFeePaid"
+                      id="planFeePaid"
+                      checked={formData.planFeePaid}
+                      onChange={handleChange}
+                      className="w-5 h-5 text-primary rounded border-gray-600 focus:ring-primary bg-gray-900"
+                    />
+                    <label htmlFor="planFeePaid" className="ml-3 text-white">Mark as Paid</label>
+                  </div>
                 </div>
               </div>
-            )}
-            
-            <div>
-               <label className="block text-sm font-medium text-gray-400 mb-2">Profile Photo URL (Optional)</label>
-               <input 
-                 type="url" 
-                 name="profilePhotoUrl"
-                 value={formData.profilePhotoUrl}
-                 onChange={handleChange}
-                 placeholder="https://example.com/photo.jpg"
-                 className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-               />
+
+              {/* Annual Fee */}
+              <div className="bg-gray-900/50 p-6 rounded-xl border border-gray-700">
+                <h4 className="text-lg font-medium text-white mb-4">Annual Membership Fee</h4>
+                <div className="space-y-4">
+                  <div className="flex items-center mb-4">
+                    <input 
+                      type="checkbox" 
+                      name="annualFeePaid"
+                      id="annualFeePaid"
+                      checked={formData.annualFeePaid}
+                      onChange={handleChange}
+                      className="w-5 h-5 text-primary rounded border-gray-600 focus:ring-primary bg-gray-900"
+                    />
+                    <label htmlFor="annualFeePaid" className="ml-3 text-white">Annual Fee Paid?</label>
+                  </div>
+
+                  {formData.annualFeePaid && (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-2">Amount</label>
+                          <input 
+                            type="number" 
+                            name="annualFeeAmount" 
+                            value={formData.annualFeeAmount}
+                            onChange={handleChange}
+                            className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-2">Payment Date</label>
+                          <input 
+                            type="date" 
+                            name="feeValidityDate" 
+                            value={formData.feeValidityDate}
+                            onChange={handleChange}
+                            className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-2">Expiry Date</label>
+                        <input 
+                          type="date" 
+                          name="annualFeeExpiryDate" 
+                          value={formData.annualFeeExpiryDate}
+                          onChange={handleChange}
+                          className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
             </div>
           </div>
 

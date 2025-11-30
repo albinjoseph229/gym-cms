@@ -3,10 +3,34 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useAdmin } from '@/context/AdminContext';
+import { useToast } from '@/context/ToastContext';
 import { Plus, Trash2 } from 'lucide-react';
+import ConfirmationModal from '@/components/ui/ConfirmationModal';
 
 export default function GalleryAdminPage() {
   const { gallery: images, loading, deleteGalleryItem } = useAdmin();
+  const { addToast } = useToast();
+  
+  // Modal State
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+
+  const confirmDelete = (id: string) => {
+    setItemToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (itemToDelete) {
+      const success = await deleteGalleryItem(itemToDelete);
+      if (success) {
+        addToast('Image deleted successfully', 'success');
+      } else {
+        addToast('Failed to delete image', 'error');
+      }
+      setItemToDelete(null);
+    }
+  };
 
   return (
     <div>
@@ -35,11 +59,7 @@ export default function GalleryAdminPage() {
                 <p className="text-white font-medium text-sm truncate">{item.caption}</p>
                 <p className="text-primary text-xs uppercase">{item.category}</p>
                 <button 
-                  onClick={() => {
-                    if (confirm('Are you sure you want to delete this image?')) {
-                      deleteGalleryItem(item.id);
-                    }
-                  }}
+                  onClick={() => confirmDelete(item.id)}
                   className="absolute top-2 right-2 p-2 bg-red-500/80 text-white rounded-full hover:bg-red-600 transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -49,6 +69,16 @@ export default function GalleryAdminPage() {
           ))
         )}
       </div>
+
+      <ConfirmationModal 
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+        title="Delete Image"
+        message="Are you sure you want to delete this image? This action cannot be undone."
+        confirmText="Delete"
+        isDangerous={true}
+      />
     </div>
   );
 }

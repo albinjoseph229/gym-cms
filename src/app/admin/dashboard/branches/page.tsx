@@ -1,11 +1,36 @@
 'use client';
 
+import { useState } from 'react';
 import { MapPin, Phone, Mail, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useAdmin } from '@/context/AdminContext';
+import { useToast } from '@/context/ToastContext';
+import ConfirmationModal from '@/components/ui/ConfirmationModal';
 
 export default function BranchesPage() {
   const { branches, loading, deleteBranch } = useAdmin();
+  const { addToast } = useToast();
+
+  // Modal State
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [branchToDelete, setBranchToDelete] = useState<string | null>(null);
+
+  const confirmDelete = (id: string) => {
+    setBranchToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (branchToDelete) {
+      const success = await deleteBranch(branchToDelete);
+      if (success) {
+        addToast('Branch deleted successfully', 'success');
+      } else {
+        addToast('Failed to delete branch', 'error');
+      }
+      setBranchToDelete(null);
+    }
+  };
 
   return (
     <div>
@@ -40,11 +65,7 @@ export default function BranchesPage() {
               
               <div className="mt-4 pt-4 border-t border-gray-700 flex justify-end">
                  <button 
-                  onClick={() => {
-                    if (confirm('Are you sure you want to delete this branch?')) {
-                      deleteBranch(branch.id);
-                    }
-                  }}
+                  onClick={() => confirmDelete(branch.id)}
                   className="text-red-400 hover:text-red-300 flex items-center text-sm"
                 >
                   <Trash2 className="w-4 h-4 mr-1" /> Delete
@@ -54,6 +75,16 @@ export default function BranchesPage() {
           ))}
         </div>
       )}
+
+      <ConfirmationModal 
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+        title="Delete Branch"
+        message="Are you sure you want to delete this branch? This action cannot be undone."
+        confirmText="Delete"
+        isDangerous={true}
+      />
     </div>
   );
 }

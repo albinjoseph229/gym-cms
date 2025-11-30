@@ -3,10 +3,34 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useAdmin } from '@/context/AdminContext';
+import { useToast } from '@/context/ToastContext';
 import { Plus, Check, Trash2, Edit } from 'lucide-react';
+import ConfirmationModal from '@/components/ui/ConfirmationModal';
 
 export default function PackagesPage() {
   const { packages, loading, deletePackage } = useAdmin();
+  const { addToast } = useToast();
+
+  // Modal State
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [packageToDelete, setPackageToDelete] = useState<string | null>(null);
+
+  const confirmDelete = (id: string) => {
+    setPackageToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (packageToDelete) {
+      const success = await deletePackage(packageToDelete);
+      if (success) {
+        addToast('Package deleted successfully', 'success');
+      } else {
+        addToast('Failed to delete package', 'error');
+      }
+      setPackageToDelete(null);
+    }
+  };
 
   return (
     <div>
@@ -44,15 +68,11 @@ export default function PackagesPage() {
               </ul>
 
               <div className="flex justify-end space-x-2 pt-4 border-t border-gray-700">
-                <button className="p-2 text-blue-400 hover:bg-blue-400/10 rounded-full transition-colors">
+                <Link href={`/admin/dashboard/packages/${pkg.id}/edit`} className="p-2 text-blue-400 hover:bg-blue-400/10 rounded-full transition-colors">
                   <Edit className="w-5 h-5" />
-                </button>
+                </Link>
                 <button 
-                  onClick={() => {
-                    if (confirm('Are you sure you want to delete this package?')) {
-                      deletePackage(pkg.id);
-                    }
-                  }}
+                  onClick={() => confirmDelete(pkg.id)}
                   className="p-2 text-red-400 hover:bg-red-400/10 rounded-full transition-colors"
                 >
                   <Trash2 className="w-5 h-5" />
@@ -62,6 +82,16 @@ export default function PackagesPage() {
           ))
         )}
       </div>
+
+      <ConfirmationModal 
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+        title="Delete Package"
+        message="Are you sure you want to delete this package? This action cannot be undone."
+        confirmText="Delete"
+        isDangerous={true}
+      />
     </div>
   );
 }

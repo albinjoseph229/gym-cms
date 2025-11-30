@@ -1,39 +1,68 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import { useAdmin } from '@/context/AdminContext';
-import { ChevronLeft, Plus, Trash2 } from 'lucide-react';
+import { useToast } from '@/context/ToastContext';
+import { ChevronLeft, Plus, X } from 'lucide-react';
 import Link from 'next/link';
 
-export default function AddPackagePage() {
+export default function EditPackagePage() {
   const router = useRouter();
-  const { addPackage } = useAdmin();
+  const params = useParams();
+  const { packages, updatePackage } = useAdmin();
+  const { addToast } = useToast();
   const [loading, setLoading] = useState(false);
+  
   const [formData, setFormData] = useState({
     name: '',
-    price: '',
-    durationDays: '',
-    benefits: ['']
+    price: 0,
+    durationDays: 30,
+    benefits: [] as string[],
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const [newBenefit, setNewBenefit] = useState('');
 
-  const handleBenefitChange = (index: number, value: string) => {
-    const newBenefits = [...formData.benefits];
-    newBenefits[index] = value;
-    setFormData({ ...formData, benefits: newBenefits });
+  useEffect(() => {
+    if (packages.length > 0 && params.id) {
+      const pkg = packages.find(p => p.id === params.id);
+      if (pkg) {
+        setFormData({
+          name: pkg.name,
+          price: pkg.price,
+          durationDays: pkg.durationDays,
+          benefits: pkg.benefits || [],
+        });
+      } else {
+        addToast('Package not found', 'error');
+        router.push('/admin/dashboard/packages');
+      }
+    }
+  }, [packages, params.id, router, addToast]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'price' || name === 'durationDays' ? Number(value) : value
+    }));
   };
 
   const addBenefit = () => {
-    setFormData({ ...formData, benefits: [...formData.benefits, ''] });
+    if (newBenefit.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        benefits: [...prev.benefits, newBenefit.trim()]
+      }));
+      setNewBenefit('');
+    }
   };
 
   const removeBenefit = (index: number) => {
-    const newBenefits = formData.benefits.filter((_, i) => i !== index);
-    setFormData({ ...formData, benefits: newBenefits });
+    setFormData(prev => ({
+      ...prev,
+      benefits: prev.benefits.filter((_, i) => i !== index)
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,21 +70,20 @@ export default function AddPackagePage() {
     setLoading(true);
 
     try {
-      const success = await addPackage({
-        ...formData,
-        price: Number(formData.price),
-        durationDays: Number(formData.durationDays),
-        benefits: formData.benefits.filter(b => b.trim() !== '')
+      const success = await updatePackage({
+        id: params.id as string,
+        ...formData
       });
 
       if (success) {
+        addToast('Package updated successfully', 'success');
         router.push('/admin/dashboard/packages');
       } else {
-        alert('Failed to add package');
+        addToast('Failed to update package', 'error');
       }
     } catch (error) {
       console.error(error);
-      alert('Error adding package');
+      addToast('An error occurred', 'error');
     } finally {
       setLoading(false);
     }
@@ -67,7 +95,7 @@ export default function AddPackagePage() {
         <Link href="/admin/dashboard/packages" className="mr-4 p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors">
           <ChevronLeft className="w-5 h-5" />
         </Link>
-        <h1 className="text-3xl font-bold">Add New Package</h1>
+        <h1 className="text-3xl font-bold">Edit Package</h1>
       </div>
 
       <div className="bg-gray-800 rounded-xl border border-gray-700 p-8 max-w-6xl">
@@ -84,7 +112,6 @@ export default function AddPackagePage() {
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="e.g. Premium Plan"
                   className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
                 />
               </div>
@@ -94,6 +121,7 @@ export default function AddPackagePage() {
                   type="number" 
                   name="price"
                   required
+                  min="0"
                   value={formData.price}
                   onChange={handleChange}
                   className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
@@ -105,6 +133,7 @@ export default function AddPackagePage() {
                   type="number" 
                   name="durationDays"
                   required
+                  min="1"
                   value={formData.durationDays}
                   onChange={handleChange}
                   className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
@@ -115,42 +144,47 @@ export default function AddPackagePage() {
 
           <div>
             <h3 className="text-xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">Benefits</h3>
-            <div className="space-y-3">
-              {formData.benefits.map((benefit, index) => (
-                <div key={index} className="flex gap-2">
-                  <input 
-                    type="text" 
-                    value={benefit}
-                    onChange={(e) => handleBenefitChange(index, e.target.value)}
-                    placeholder="e.g. Free Personal Training"
-                    className="flex-1 bg-gray-900 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary"
-                  />
-                  <button 
-                    type="button" 
-                    onClick={() => removeBenefit(index)}
-                    className="p-2 text-red-400 hover:bg-red-400/10 rounded-lg"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-                </div>
-              ))}
+            <div className="flex gap-2 mb-3">
+              <input 
+                type="text" 
+                value={newBenefit}
+                onChange={(e) => setNewBenefit(e.target.value)}
+                placeholder="Add a benefit..."
+                className="flex-1 bg-gray-900 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary"
+                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addBenefit())}
+              />
               <button 
-                type="button" 
+                type="button"
                 onClick={addBenefit}
-                className="text-primary text-sm font-medium flex items-center hover:text-orange-400"
+                className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
               >
-                <Plus className="w-4 h-4 mr-1" /> Add Benefit
+                <Plus className="w-5 h-5" />
               </button>
             </div>
+            
+            <ul className="space-y-2">
+              {formData.benefits.map((benefit, index) => (
+                <li key={index} className="flex justify-between items-center bg-gray-900/50 px-4 py-2 rounded-lg border border-gray-700">
+                  <span className="text-gray-300">{benefit}</span>
+                  <button 
+                    type="button"
+                    onClick={() => removeBenefit(index)}
+                    className="text-red-400 hover:text-red-300"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
 
           <div className="flex justify-end pt-6">
             <button 
               type="submit" 
               disabled={loading}
-              className="bg-primary hover:bg-red-600 text-white px-8 py-3 rounded-lg font-bold transition-colors disabled:opacity-50"
+              className="bg-primary hover:bg-orange-600 text-white px-8 py-3 rounded-lg font-bold transition-colors disabled:opacity-50"
             >
-              {loading ? 'Saving...' : 'Add Package'}
+              {loading ? 'Saving...' : 'Update Package'}
             </button>
           </div>
         </form>

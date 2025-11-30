@@ -46,6 +46,47 @@ export async function POST(request: Request) {
   }
 }
 
+export async function PUT(request: Request) {
+  try {
+    const body = await request.json();
+    if (!body.id || !body.name || !body.price) {
+      return NextResponse.json({ error: 'ID, Name and Price are required' }, { status: 400 });
+    }
+
+    const data = await getSheetData('Plans!A2:E');
+    if (!data) return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 });
+
+    const rowIndex = data.findIndex((row: string[]) => row[0] === body.id);
+    
+    if (rowIndex === -1) {
+      return NextResponse.json({ error: 'Package not found' }, { status: 404 });
+    }
+
+    const updatedPackage = [
+      body.id,
+      body.name,
+      body.price.toString(),
+      body.durationDays.toString(),
+      Array.isArray(body.benefits) ? body.benefits.join(', ') : (body.benefits || '')
+    ];
+
+    const sheetRowIndex = rowIndex + 2;
+    const range = `Plans!A${sheetRowIndex}:E${sheetRowIndex}`;
+    
+    const { updateSheetData } = await import('@/lib/googleSheets');
+    const success = await updateSheetData(range, [updatedPackage]);
+
+    if (success) {
+      return NextResponse.json({ success: true });
+    } else {
+      return NextResponse.json({ error: 'Failed to update package' }, { status: 500 });
+    }
+  } catch (error) {
+    console.error('Error updating package:', error);
+    return NextResponse.json({ error: 'Failed to update package' }, { status: 500 });
+  }
+}
+
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);

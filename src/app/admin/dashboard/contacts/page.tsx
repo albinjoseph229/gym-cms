@@ -1,18 +1,37 @@
 'use client';
 
+import { useState } from 'react';
 import { Mail, Phone, MapPin, Calendar, Trash2 } from 'lucide-react';
 import { useAdmin } from '@/context/AdminContext';
+import { useToast } from '@/context/ToastContext';
+import ConfirmationModal from '@/components/ui/ConfirmationModal';
 
 export default function ContactRequestsPage() {
   const { contacts, loading, deleteContact } = useAdmin();
+  const { addToast } = useToast();
+
+  // Modal State
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [contactToDelete, setContactToDelete] = useState<string | null>(null);
 
   if (loading) {
     return <div className="text-white">Loading...</div>;
   }
 
-  const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this contact request?')) {
-      await deleteContact(id);
+  const confirmDelete = (id: string) => {
+    setContactToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (contactToDelete) {
+      const success = await deleteContact(contactToDelete);
+      if (success) {
+        addToast('Contact request deleted successfully', 'success');
+      } else {
+        addToast('Failed to delete contact request', 'error');
+      }
+      setContactToDelete(null);
     }
   };
 
@@ -55,7 +74,7 @@ export default function ContactRequestsPage() {
                   <td className="px-6 py-4 text-gray-400 max-w-xs truncate">{contact.message}</td>
                   <td className="px-6 py-4">
                     <button 
-                      onClick={() => handleDelete(contact.id)}
+                      onClick={() => confirmDelete(contact.id)}
                       className="text-red-400 hover:text-red-300 transition-colors p-2 hover:bg-red-400/10 rounded-lg"
                       title="Delete Request"
                     >
@@ -68,6 +87,16 @@ export default function ContactRequestsPage() {
           </table>
         </div>
       </div>
+
+      <ConfirmationModal 
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+        title="Delete Contact Request"
+        message="Are you sure you want to delete this contact request? This action cannot be undone."
+        confirmText="Delete"
+        isDangerous={true}
+      />
     </div>
   );
 }

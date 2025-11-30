@@ -101,59 +101,64 @@ export default function RenewMembershipPage() {
           <p className="text-gray-400">ID: {formData.id}</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-8">
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Payment Date</label>
-              <input 
-                type="date" 
-                name="feeValidityDate" 
-                value={formData.feeValidityDate}
-                onChange={handleChange}
-                required
-                className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-              />
-              <p className="text-xs text-gray-500 mt-1">Date when the fee was paid.</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Annual Fee Expiry Date</label>
-              <input 
-                type="date" 
-                name="annualFeeExpiryDate" 
-                value={formData.annualFeeExpiryDate || ''}
-                onChange={handleChange}
-                required
-                className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-              />
-              <p className="text-xs text-gray-500 mt-1">Valid until (defaults to 1 year).</p>
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-4">Membership Details</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Payment Date</label>
+                <input 
+                  type="date" 
+                  name="feeValidityDate" 
+                  value={formData.feeValidityDate}
+                  onChange={handleChange}
+                  required
+                  className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                />
+                <p className="text-xs text-gray-500 mt-1">Date when the fee was paid.</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Annual Fee Expiry Date</label>
+                <input 
+                  type="date" 
+                  name="annualFeeExpiryDate" 
+                  value={formData.annualFeeExpiryDate || ''}
+                  onChange={handleChange}
+                  required
+                  className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                />
+                <p className="text-xs text-gray-500 mt-1">Valid until (defaults to 1 year).</p>
+              </div>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-gray-700">
-            <h3 className="text-lg font-bold mb-4">Payment Details</h3>
+          <div className="pt-6 border-t border-gray-700">
+            <h3 className="text-lg font-semibold text-white mb-4">Payment Status</h3>
             
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-400 mb-2">Annual Fee Amount</label>
-              <input 
-                type="number" 
-                name="annualFeeAmount" 
-                value={formData.annualFeeAmount || 0}
-                onChange={handleChange}
-                className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
-              />
-            </div>
+            <div className="bg-gray-900/50 p-6 rounded-xl border border-gray-700 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Annual Fee Amount</label>
+                <input 
+                  type="number" 
+                  name="annualFeeAmount" 
+                  value={formData.annualFeeAmount || 0}
+                  onChange={handleChange}
+                  className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
+                />
+              </div>
 
-            <div className="flex items-center mb-4">
-              <input 
-                type="checkbox" 
-                name="annualFeePaid"
-                id="annualFeePaid"
-                checked={formData.annualFeePaid}
-                onChange={handleChange}
-                className="w-5 h-5 text-primary rounded border-gray-600 focus:ring-primary bg-gray-900"
-              />
-              <label htmlFor="annualFeePaid" className="ml-3 text-white">Annual Membership Fee Paid?</label>
+              <div className="flex items-center">
+                <input 
+                  type="checkbox" 
+                  name="annualFeePaid"
+                  id="annualFeePaid"
+                  checked={formData.annualFeePaid}
+                  onChange={handleChange}
+                  className="w-5 h-5 text-primary rounded border-gray-600 focus:ring-primary bg-gray-900"
+                />
+                <label htmlFor="annualFeePaid" className="ml-3 text-white">Mark Annual Fee as Paid</label>
+              </div>
             </div>
           </div>
 

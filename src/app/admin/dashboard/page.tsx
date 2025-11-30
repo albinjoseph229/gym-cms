@@ -119,6 +119,77 @@ export default function AdminDashboard() {
           <span className="text-green-400 text-sm font-medium">Current Month</span>
         </div>
 
+        {/* Yearly Revenue Cards */}
+        {(() => {
+          const yearlyStats = members.reduce((acc, member) => {
+            let planRev = acc.planRev;
+            let membershipRev = acc.membershipRev;
+
+            // Add Plan Fee if plan started this year
+            if (member.planStartDate) {
+              const planDate = new Date(member.planStartDate);
+              if (planDate.getFullYear() === currentYear) {
+                planRev += (member.planFee || 0);
+              }
+            }
+
+            // Add Annual Fee if paid this year
+            if (member.feeValidityDate && member.annualFeePaid) {
+              const feeDate = new Date(member.feeValidityDate);
+              if (feeDate.getFullYear() === currentYear) {
+                membershipRev += (member.annualFeeAmount || 0);
+              }
+            }
+
+            return { planRev, membershipRev };
+          }, { planRev: 0, membershipRev: 0 });
+
+          const totalYearlyRevenue = yearlyStats.planRev + yearlyStats.membershipRev;
+
+          return (
+            <>
+              <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <p className="text-gray-400 text-sm">Yearly Revenue</p>
+                    <h3 className="text-3xl font-bold text-white">₹{totalYearlyRevenue.toLocaleString()}</h3>
+                  </div>
+                  <div className="p-3 bg-purple-500/20 rounded-lg">
+                    <TrendingUp className="w-6 h-6 text-purple-500" />
+                  </div>
+                </div>
+                <span className="text-purple-400 text-sm font-medium">Current Year ({currentYear})</span>
+              </div>
+
+              <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <p className="text-gray-400 text-sm">Yearly Plan Revenue</p>
+                    <h3 className="text-3xl font-bold text-white">₹{yearlyStats.planRev.toLocaleString()}</h3>
+                  </div>
+                  <div className="p-3 bg-indigo-500/20 rounded-lg">
+                    <CreditCard className="w-6 h-6 text-indigo-500" />
+                  </div>
+                </div>
+                <span className="text-indigo-400 text-sm font-medium">Plan Fees ({currentYear})</span>
+              </div>
+
+              <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <p className="text-gray-400 text-sm">Yearly Membership Revenue</p>
+                    <h3 className="text-3xl font-bold text-white">₹{yearlyStats.membershipRev.toLocaleString()}</h3>
+                  </div>
+                  <div className="p-3 bg-pink-500/20 rounded-lg">
+                    <Users className="w-6 h-6 text-pink-500" />
+                  </div>
+                </div>
+                <span className="text-pink-400 text-sm font-medium">Annual Fees ({currentYear})</span>
+              </div>
+            </>
+          );
+        })()}
+
         <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
           <div className="flex justify-between items-start mb-4">
             <div>

@@ -3,11 +3,18 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useAdmin } from '@/context/AdminContext';
+import { useToast } from '@/context/ToastContext';
 import { Search, Plus, Trash2, CreditCard, Pencil } from 'lucide-react';
+import ConfirmationModal from '@/components/ui/ConfirmationModal';
 
 export default function MembersPage() {
   const { members, loading, deleteMember } = useAdmin();
+  const { addToast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Modal State
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [memberToDelete, setMemberToDelete] = useState<string | null>(null);
 
   const filteredMembers = members.filter(member => 
     member.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -15,17 +22,28 @@ export default function MembersPage() {
     member.mobileNumber.includes(searchTerm)
   );
 
-  const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this member?')) {
-      await deleteMember(id);
+  const confirmDelete = (id: string) => {
+    setMemberToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (memberToDelete) {
+      const success = await deleteMember(memberToDelete);
+      if (success) {
+        addToast('Member deleted successfully', 'success');
+      } else {
+        addToast('Failed to delete member', 'error');
+      }
+      setMemberToDelete(null);
     }
   };
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <h1 className="text-3xl font-bold text-white">Members</h1>
-        <Link href="/admin/dashboard/members/add" className="bg-primary hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
+        <Link href="/admin/dashboard/members/add" className="bg-primary hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center transition-colors w-full md:w-auto justify-center">
           <Plus className="w-5 h-5 mr-2" />
           Add Member
         </Link>
@@ -111,7 +129,7 @@ export default function MembersPage() {
                             <Pencil className="w-5 h-5" />
                           </Link>
                           <button 
-                            onClick={() => handleDelete(member.id)}
+                            onClick={() => confirmDelete(member.id)}
                             className="text-red-400 hover:text-red-300" 
                             title="Delete Member"
                           >
@@ -127,6 +145,16 @@ export default function MembersPage() {
           </table>
         </div>
       </div>
+
+      <ConfirmationModal 
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+        title="Delete Member"
+        message="Are you sure you want to delete this member? This action cannot be undone."
+        confirmText="Delete"
+        isDangerous={true}
+      />
     </div>
   );
 }

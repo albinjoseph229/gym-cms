@@ -23,6 +23,7 @@ interface AdminContextType {
   updateTrainer: (trainer: Trainer) => Promise<boolean>;
   deleteTrainer: (id: string) => Promise<boolean>;
   addPackage: (pkg: Omit<Package, 'id'>) => Promise<boolean>;
+  updatePackage: (pkg: Package) => Promise<boolean>;
   deletePackage: (id: string) => Promise<boolean>;
   addGalleryItem: (item: Omit<GalleryItem, 'id'>) => Promise<boolean>;
   deleteGalleryItem: (id: string) => Promise<boolean>;
@@ -49,6 +50,7 @@ const AdminContext = createContext<AdminContextType>({
   updateTrainer: async () => false,
   deleteTrainer: async () => false,
   addPackage: async () => false,
+  updatePackage: async () => false,
   deletePackage: async () => false,
   addGalleryItem: async () => false,
   deleteGalleryItem: async () => false,
@@ -294,6 +296,32 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const updatePackage = async (packageData: Package) => {
+    const previousPackages = [...packages];
+    setPackages(prev => prev.map(p => p.id === packageData.id ? packageData : p));
+    setIsSyncing(true);
+
+    try {
+      const res = await fetch('/api/packages', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(packageData)
+      });
+
+      if (res.ok) {
+        await fetchData();
+        return true;
+      } else {
+        throw new Error('Failed to update package');
+      }
+    } catch (error) {
+      console.error(error);
+      setPackages(previousPackages);
+      setIsSyncing(false);
+      return false;
+    }
+  };
+
   const deletePackage = async (id: string) => {
     const previousPackages = [...packages];
     setPackages(prev => prev.filter(p => p.id !== id));
@@ -441,7 +469,7 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
       members, trainers, packages, gallery, branches, contacts,
       loading, isSyncing, lastSynced, refreshData: fetchData,
       addMember, deleteMember, updateMember, addTrainer, updateTrainer, deleteTrainer, 
-      addPackage, deletePackage, addGalleryItem, deleteGalleryItem, 
+      addPackage, updatePackage, deletePackage, addGalleryItem, deleteGalleryItem, 
       addBranch, deleteBranch, deleteContact
     }}>
       {children}
