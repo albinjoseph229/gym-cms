@@ -41,7 +41,7 @@ export default function MemberStatusPage() {
       <PageHeader 
         title="Member Status" 
         subtitle="Check your membership validity and profile details."
-        backgroundImage="https://images.unsplash.com/photo-1574680096141-1cddd32e0340?q=80&w=1469&auto=format&fit=crop"
+        bgImage="https://images.unsplash.com/photo-1574680096141-1cddd32e0340?q=80&w=1469&auto=format&fit=crop"
       />
 
       <div className="container mx-auto px-4 py-16">

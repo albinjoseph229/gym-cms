@@ -2,7 +2,7 @@
 
 import { useAdmin } from '@/context/AdminContext';
 import { RefreshCw, CheckCircle } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns'; // We might need to install date-fns or use simple formatter
+
 import { useState, useEffect } from 'react';
 
 export default function SyncStatus() {
