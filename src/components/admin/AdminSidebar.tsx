@@ -52,9 +52,7 @@ export default function AdminSidebar() {
             OASIS <span className="text-primary">FITNESS ACADEMY</span>
           </h1>
           {/* Close button for mobile inside sidebar (optional, but good for clarity) */}
-          <button onClick={closeSidebar} className="md:hidden text-gray-400 hover:text-white">
-            <X className="w-5 h-5" />
-          </button>
+
         </div>
         
         <nav className="flex-1 p-4 space-y-2 overflow-y-auto">

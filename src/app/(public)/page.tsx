@@ -17,22 +17,22 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-transparent"></div>
         </div>
 
-        <div className="container mx-auto px-4 relative z-10 pt-20">
+        <div className="container mx-auto px-4 relative z-10 pt-16 md:pt-20">
           <div className="max-w-3xl">
-            <p className="text-primary font-bold tracking-widest uppercase mb-4 animate-fade-in-up">Welcome to Oasis Fitness Academy</p>
-            <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight uppercase animate-fade-in-up delay-100">
+            <p className="text-primary font-bold tracking-widest uppercase mb-2 md:mb-4 text-sm md:text-base animate-fade-in-up">Welcome to Oasis Fitness Academy</p>
+            <h1 className="text-4xl md:text-7xl font-extrabold text-white mb-4 md:mb-6 leading-tight uppercase animate-fade-in-up delay-100">
               Fit to <span className="text-primary">Keep</span><br />
               Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-200 to-gray-500">Skin</span>
             </h1>
-            <p className="text-gray-300 text-lg mb-8 max-w-xl leading-relaxed animate-fade-in-up delay-200">
+            <p className="text-gray-300 text-base md:text-lg mb-6 md:mb-8 max-w-xl leading-relaxed animate-fade-in-up delay-200">
               Achieve your fitness goals with our premium facilities and expert trainers. 
               Join a community that motivates you to be your best self.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up delay-300">
-              <Link href="/member" className="bg-primary hover:bg-orange-600 text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest transition-all transform hover:scale-105 flex items-center justify-center">
-                Join Now <ArrowRight className="ml-2 w-5 h-5" />
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 animate-fade-in-up delay-300">
+              <Link href="/member" className="bg-primary hover:bg-orange-600 text-white px-8 py-3 md:py-4 rounded-full font-bold uppercase tracking-widest transition-all transform hover:scale-105 flex items-center justify-center text-sm md:text-base">
+                Join Now <ArrowRight className="ml-2 w-4 h-4 md:w-5 md:h-5" />
               </Link>
-              <Link href="/trainers" className="border-2 border-white text-white hover:bg-white hover:text-black px-8 py-4 rounded-full font-bold uppercase tracking-widest transition-all flex items-center justify-center">
+              <Link href="/trainers" className="border-2 border-white text-white hover:bg-white hover:text-black px-8 py-3 md:py-4 rounded-full font-bold uppercase tracking-widest transition-all flex items-center justify-center text-sm md:text-base">
                 Our Trainers
               </Link>
             </div>

@@ -62,7 +62,8 @@ export default function MembersPage() {
       </div>
 
       {/* Members Table */}
-      <div className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 shadow-lg">
+      {/* Desktop Table View */}
+      <div className="hidden md:block bg-gray-800 rounded-xl overflow-hidden border border-gray-700 shadow-lg">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-gray-300">
             <thead className="bg-gray-700 text-gray-100 uppercase text-sm">
@@ -144,6 +145,80 @@ export default function MembersPage() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-4">
+        {loading ? (
+          <div className="text-center text-gray-400 py-8">Loading members...</div>
+        ) : filteredMembers.length === 0 ? (
+          <div className="text-center text-gray-400 py-8">No members found.</div>
+        ) : (
+          filteredMembers.map((member) => {
+            const isPlanExpired = member.planExpiryDate ? new Date(member.planExpiryDate) < new Date() : false;
+            const isMembershipExpired = member.annualFeeExpiryDate ? new Date(member.annualFeeExpiryDate) < new Date() : false;
+
+            return (
+              <div key={member.id} className="bg-gray-800 rounded-xl border border-gray-700 p-4 shadow-lg">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h3 className="text-lg font-bold text-white">{member.fullName}</h3>
+                    <p className="text-primary font-mono text-sm">{member.id}</p>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Link href={`/admin/dashboard/members/${member.id}/card`} className="p-2 bg-blue-500/10 text-blue-400 rounded-lg" title="Card">
+                      <CreditCard className="w-4 h-4" />
+                    </Link>
+                    <Link href={`/admin/dashboard/members/${member.id}/edit`} className="p-2 bg-yellow-500/10 text-yellow-400 rounded-lg" title="Edit">
+                      <Pencil className="w-4 h-4" />
+                    </Link>
+                    <button 
+                      onClick={() => confirmDelete(member.id)}
+                      className="p-2 bg-red-500/10 text-red-400 rounded-lg" 
+                      title="Delete"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase">Plan</p>
+                    <p className="text-sm text-white font-medium">{member.currentPlan}</p>
+                    {isPlanExpired && <span className="text-[10px] text-red-400 font-bold">Expired</span>}
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase">Mobile</p>
+                    <p className="text-sm text-white font-medium">{member.mobileNumber}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase">Plan Expiry</p>
+                    <p className={`text-sm font-medium ${isPlanExpired ? 'text-red-400' : 'text-white'}`}>
+                      {member.planExpiryDate}
+                    </p>
+                    {isPlanExpired && (
+                      <Link href={`/admin/dashboard/members/${member.id}/renew-plan`} className="text-[10px] text-blue-400 underline">
+                        Renew
+                      </Link>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase">Membership</p>
+                    <p className={`text-sm font-medium ${isMembershipExpired ? 'text-orange-400' : 'text-white'}`}>
+                      {member.annualFeeExpiryDate || '-'}
+                    </p>
+                    {isMembershipExpired && (
+                      <Link href={`/admin/dashboard/members/${member.id}/renew-membership`} className="text-[10px] text-blue-400 underline">
+                        Renew
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        )}
       </div>
 
       <ConfirmationModal 

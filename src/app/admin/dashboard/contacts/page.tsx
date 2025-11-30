@@ -39,7 +39,8 @@ export default function ContactRequestsPage() {
     <div>
       <h1 className="text-3xl font-bold mb-8">Contact Requests</h1>
       
-      <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+      {/* Desktop Table View */}
+      <div className="hidden md:block bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead className="bg-gray-700 text-gray-300 uppercase text-xs">
@@ -86,6 +87,43 @@ export default function ContactRequestsPage() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-4">
+        {contacts.map((contact) => (
+          <div key={contact.id} className="bg-gray-800 rounded-xl border border-gray-700 p-4 shadow-lg">
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <h3 className="text-lg font-bold text-white">{contact.name}</h3>
+                <div className="flex items-center text-gray-400 text-xs mt-1">
+                  <Calendar className="w-3 h-3 mr-1" />
+                  {contact.date}
+                </div>
+              </div>
+              <span className="bg-primary/20 text-primary px-2 py-1 rounded text-xs font-bold uppercase">{contact.branch}</span>
+            </div>
+            
+            <div className="space-y-2 mb-4">
+              <p className="flex items-center text-gray-300 text-sm"><Mail className="w-4 h-4 mr-2 text-gray-500" /> {contact.email}</p>
+              <p className="flex items-center text-gray-300 text-sm"><Phone className="w-4 h-4 mr-2 text-gray-500" /> {contact.phone}</p>
+            </div>
+
+            <div className="bg-gray-700/30 p-3 rounded-lg mb-4">
+              <p className="text-gray-400 text-sm italic">"{contact.message}"</p>
+            </div>
+
+            <div className="flex justify-end pt-3 border-t border-gray-700">
+              <button 
+                onClick={() => confirmDelete(contact.id)}
+                className="flex items-center text-red-400 hover:text-red-300 transition-colors text-sm font-medium"
+              >
+                <Trash2 className="w-4 h-4 mr-1" />
+                Delete Request
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
 
       <ConfirmationModal 

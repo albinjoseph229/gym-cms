@@ -47,20 +47,20 @@ export default function MemberStatusPage() {
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-2xl mx-auto">
           {/* Search Box */}
-          <div className="bg-secondary p-8 rounded-2xl shadow-xl mb-12">
+          <div className="bg-secondary p-6 md:p-8 rounded-2xl shadow-xl mb-12">
             <h2 className="text-2xl font-bold mb-6 text-white text-center">Enter Member ID</h2>
-            <form onSubmit={handleSearch} className="flex gap-4">
+            <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4">
               <input 
                 type="text" 
                 value={memberId}
                 onChange={(e) => setMemberId(e.target.value)}
                 placeholder="Ex: GYM-001"
-                className="flex-grow bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors text-lg"
+                className="flex-grow bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors text-lg w-full"
               />
               <button 
                 type="submit" 
                 disabled={loading}
-                className="bg-primary hover:bg-red-600 text-white px-6 py-3 rounded-lg font-bold transition-colors disabled:opacity-50"
+                className="bg-primary hover:bg-red-600 text-white px-6 py-3 rounded-lg font-bold transition-colors disabled:opacity-50 flex justify-center items-center"
               >
                 {loading ? 'Searching...' : <Search className="w-6 h-6" />}
               </button>
