@@ -4,7 +4,7 @@ import { Member } from '@/types';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(request: Request) {
   // Note: In Next.js 15 App Router, params is a Promise.
   // However, this is a route handler, so we access params from the second argument.
   // But wait, for dynamic routes like [id], we need to extract it.
