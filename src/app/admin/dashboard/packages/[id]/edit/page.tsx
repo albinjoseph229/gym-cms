@@ -98,12 +98,12 @@ export default function EditPackagePage() {
         <h1 className="text-3xl font-bold">Edit Package</h1>
       </div>
 
-      <div className="bg-gray-800 rounded-xl border border-gray-700 p-4 md:p-8 max-w-6xl">
+      <div className="bg-gray-800 rounded-xl border border-gray-700 p-6 md:p-8 max-w-6xl">
         <form onSubmit={handleSubmit} className="space-y-8">
           
           <div>
             <h3 className="text-xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">Package Details</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2">Package Name</label>
                 <input 

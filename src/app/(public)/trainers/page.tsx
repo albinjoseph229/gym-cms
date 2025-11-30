@@ -44,7 +44,7 @@ export default function TrainersPage() {
                   <p className="text-gray-500 text-sm uppercase tracking-wider mb-4">{trainer.specialization}</p>
                   
                   {trainer.description && (
-                    <p className="text-gray-400 text-sm px-4 mb-6 line-clamp-3">{trainer.description}</p>
+                    <p className="text-gray-400 text-sm px-4 mb-6">{trainer.description}</p>
                   )}
                   
                   <div className="flex justify-center space-x-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
