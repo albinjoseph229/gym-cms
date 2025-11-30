@@ -26,8 +26,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   }
 
   try {
-    // Range: Members!A2:O
-    const data = await getSheetData('Members!A2:O');
+    // Range: Members!A2:R
+    const data = await getSheetData('Members!A2:R');
     
     if (data && data.length > 0) {
       const members = mapMembers(data);

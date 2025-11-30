@@ -154,24 +154,49 @@ export const updateSheetData = async (range: string, values: string[][]) => {
 // For simplicity in this MVP, we will assume fixed column order as per requirements.
 
 export const mapMembers = (rows: string[][]): Member[] => {
-  // Skip header row if present in the call, but usually we fetch data range
-  return rows.map((row) => ({
-    id: row[0] || '',
-    fullName: row[1] || '',
-    email: row[2] || '',
-    mobileNumber: row[3] || '',
-    dateOfBirth: row[4] || '',
-    branchName: row[5] || '',
-    registrationDate: row[6] || '',
-    currentPlan: row[7] || '',
-    planStartDate: row[8] || '',
-    planExpiryDate: row[9] || '',
-    remainingDays: parseInt(row[10] || '0'),
-    annualFeePaid: row[11] === 'Yes',
-    feeValidityDate: row[12] || '',
-    qrCodeUrl: row[13] || '',
-    profilePhotoUrl: row[14] || '',
-  }));
+  // New Structure:
+  // 0: ID, 1: Full Name, 2: Mobile, 3: Email, 4: DOB, 5: Branch, 6: Reg Date
+  // 7: Plan, 8: Start Date, 9: End Date, 10: Plan Fee Paid, 11: Plan Fee Amount
+  // 12: Annual Fee Paid, 13: Payment Date, 14: Expiry Date, 15: Amount
+  // 16: QR URL, 17: Photo URL
+
+  return rows.map((row) => {
+    const planExpiryDate = row[9] || '';
+    let remainingDays = 0;
+    
+    if (planExpiryDate) {
+      const expiry = new Date(planExpiryDate);
+      const today = new Date();
+      // Reset time part for accurate day calculation
+      expiry.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0);
+      
+      const diffTime = expiry.getTime() - today.getTime();
+      remainingDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    }
+
+    return {
+      id: row[0] || '',
+      fullName: row[1] || '',
+      mobileNumber: row[2] || '',
+      email: row[3] || '',
+      dateOfBirth: row[4] || '',
+      branchName: row[5] || '',
+      registrationDate: row[6] || '',
+      currentPlan: row[7] || '',
+      planStartDate: row[8] || '',
+      planExpiryDate: planExpiryDate,
+      remainingDays: remainingDays, // Calculated in code
+      planFeePaid: row[10] === 'Yes',
+      planFee: parseFloat(row[11] || '0'),
+      annualFeePaid: row[12] === 'Yes',
+      feeValidityDate: row[13] || '', // Annual Fee Payment Date
+      annualFeeExpiryDate: row[14] || '',
+      annualFeeAmount: parseFloat(row[15] || '0'),
+      qrCodeUrl: row[16] || '',
+      profilePhotoUrl: row[17] || '',
+    };
+  });
 };
 
 export const mapTrainers = (rows: string[][]): Trainer[] => {
@@ -205,4 +230,16 @@ export const mapGallery = (rows: string[][]): GalleryItem[] => {
         imageUrl: row[2] || '',
         caption: row[3] || '',
     }));
+};
+
+export const mapContacts = (rows: string[][]): ContactSubmission[] => {
+  return rows.map((row, index) => ({
+    id: row[0] || `contact-${index}`,
+    name: row[1] || '',
+    email: row[2] || '',
+    phone: row[3] || '',
+    branch: row[4] || '',
+    message: row[5] || '',
+    date: row[6] || '',
+  }));
 };

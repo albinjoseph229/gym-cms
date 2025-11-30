@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useAdmin } from '@/context/AdminContext';
-import { Search, Plus, Trash2, CreditCard } from 'lucide-react';
+import { Search, Plus, Trash2, CreditCard, Pencil } from 'lucide-react';
 
 export default function MembersPage() {
   const { members, loading, deleteMember } = useAdmin();
@@ -53,45 +53,75 @@ export default function MembersPage() {
                 <th className="py-4 px-6">Name</th>
                 <th className="py-4 px-6">Mobile</th>
                 <th className="py-4 px-6">Plan</th>
-                <th className="py-4 px-6">Expiry</th>
+                <th className="py-4 px-6">Plan Expiry</th>
+                <th className="py-4 px-6">Membership Expiry</th>
                 <th className="py-4 px-6 text-center">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-gray-400">Loading members...</td>
+                  <td colSpan={7} className="py-8 text-center text-gray-400">Loading members...</td>
                 </tr>
               ) : filteredMembers.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-gray-400">No members found.</td>
+                  <td colSpan={7} className="py-8 text-center text-gray-400">No members found.</td>
                 </tr>
               ) : (
-                filteredMembers.map((member) => (
-                  <tr key={member.id} className="hover:bg-gray-750 transition-colors">
-                    <td className="py-4 px-6 font-mono text-sm text-primary">{member.id}</td>
-                    <td className="py-4 px-6 font-medium text-white">{member.fullName}</td>
-                    <td className="py-4 px-6">{member.mobileNumber}</td>
-                    <td className="py-4 px-6">
-                      <span className="bg-gray-700 px-2 py-1 rounded text-xs text-gray-300">{member.currentPlan}</span>
-                    </td>
-                    <td className="py-4 px-6 text-sm">{member.planExpiryDate}</td>
-                    <td className="py-4 px-6">
-                      <div className="flex justify-center space-x-3">
-                        <Link href={`/admin/dashboard/members/${member.id}/card`} className="text-blue-400 hover:text-blue-300" title="Generate ID Card">
-                          <CreditCard className="w-5 h-5" />
-                        </Link>
-                        <button 
-                          onClick={() => handleDelete(member.id)}
-                          className="text-red-400 hover:text-red-300" 
-                          title="Delete Member"
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                filteredMembers.map((member) => {
+                  const isPlanExpired = member.planExpiryDate ? new Date(member.planExpiryDate) < new Date() : false;
+                  const isMembershipExpired = member.annualFeeExpiryDate ? new Date(member.annualFeeExpiryDate) < new Date() : false;
+                  
+                  return (
+                    <tr key={member.id} className="hover:bg-gray-750 transition-colors">
+                      <td className="py-4 px-6 font-mono text-sm text-primary">{member.id}</td>
+                      <td className="py-4 px-6 font-medium text-white">
+                        {member.fullName}
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {isPlanExpired && <span className="text-[10px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded border border-red-500/30">Plan Expired</span>}
+                          {isMembershipExpired && <span className="text-[10px] bg-orange-500/20 text-orange-400 px-1.5 py-0.5 rounded border border-orange-500/30">Membership Expired</span>}
+                        </div>
+                      </td>
+                      <td className="py-4 px-6">{member.mobileNumber}</td>
+                      <td className="py-4 px-6">
+                        <span className="bg-gray-700 px-2 py-1 rounded text-xs text-gray-300">{member.currentPlan}</span>
+                      </td>
+                      <td className={`py-4 px-6 text-sm ${isPlanExpired ? 'text-red-400 font-bold' : ''}`}>
+                        {member.planExpiryDate}
+                        {isPlanExpired && (
+                          <Link href={`/admin/dashboard/members/${member.id}/renew-plan`} className="block text-xs text-blue-400 hover:underline mt-1">
+                            Renew Plan
+                          </Link>
+                        )}
+                      </td>
+                      <td className={`py-4 px-6 text-sm ${isMembershipExpired ? 'text-orange-400 font-bold' : ''}`}>
+                        {member.annualFeeExpiryDate || '-'}
+                        {isMembershipExpired && (
+                          <Link href={`/admin/dashboard/members/${member.id}/renew-membership`} className="block text-xs text-blue-400 hover:underline mt-1">
+                            Renew Membership
+                          </Link>
+                        )}
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="flex justify-center space-x-3">
+                          <Link href={`/admin/dashboard/members/${member.id}/card`} className="text-blue-400 hover:text-blue-300" title="Generate ID Card">
+                            <CreditCard className="w-5 h-5" />
+                          </Link>
+                          <Link href={`/admin/dashboard/members/${member.id}/edit`} className="text-yellow-400 hover:text-yellow-300" title="Edit Member">
+                            <Pencil className="w-5 h-5" />
+                          </Link>
+                          <button 
+                            onClick={() => handleDelete(member.id)}
+                            className="text-red-400 hover:text-red-300" 
+                            title="Delete Member"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>

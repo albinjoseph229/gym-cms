@@ -39,3 +39,51 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
+
+export async function GET() {
+  try {
+    const { getSheetData, mapContacts } = await import('@/lib/googleSheets');
+    const rows = await getSheetData('Contacts!A2:G');
+    const contacts = mapContacts(rows);
+    return NextResponse.json(contacts);
+  } catch (error) {
+    console.error('Error fetching contacts:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ error: 'Contact ID is required' }, { status: 400 });
+    }
+
+    const { getSheetData, updateSheetData } = await import('@/lib/googleSheets');
+    const data = await getSheetData('Contacts!A2:G');
+    if (!data) return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 });
+
+    const rowIndex = data.findIndex((row: string[]) => row[0] === id);
+    
+    if (rowIndex === -1) {
+      return NextResponse.json({ error: 'Contact not found' }, { status: 404 });
+    }
+
+    const sheetRowIndex = rowIndex + 2;
+    const range = `Contacts!A${sheetRowIndex}:G${sheetRowIndex}`;
+    const emptyRow = Array(7).fill('');
+    
+    const success = await updateSheetData(range, [emptyRow]);
+
+    if (success) {
+      return NextResponse.json({ success: true });
+    } else {
+      return NextResponse.json({ error: 'Failed to delete contact' }, { status: 500 });
+    }
+  } catch (error) {
+    console.error('Error deleting contact:', error);
+    return NextResponse.json({ error: 'Failed to delete contact' }, { status: 500 });
+  }
+}

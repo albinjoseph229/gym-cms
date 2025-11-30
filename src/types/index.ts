@@ -14,6 +14,10 @@ export interface Member {
   feeValidityDate: string;
   qrCodeUrl?: string;
   profilePhotoUrl?: string;
+  planFeePaid?: boolean;
+  planFee?: number;
+  annualFeeExpiryDate?: string;
+  annualFeeAmount?: number;
 }
 
 export interface Trainer {

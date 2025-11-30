@@ -126,21 +126,30 @@ export default function MemberStatusPage() {
                 {/* Annual Fee Status */}
                 <div>
                   <h3 className="text-gray-500 font-bold uppercase tracking-wider text-sm mb-4">Annual Membership Fee</h3>
-                  <div className={`flex items-center p-6 rounded-xl border ${member.annualFeePaid ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-                    {member.annualFeePaid ? (
-                      <CheckCircle className="w-8 h-8 text-green-500 mr-4" />
-                    ) : (
-                      <AlertCircle className="w-8 h-8 text-red-500 mr-4" />
-                    )}
-                    <div>
-                      <p className={`text-lg font-bold ${member.annualFeePaid ? 'text-green-700' : 'text-red-700'}`}>
-                        {member.annualFeePaid ? 'Paid' : 'Unpaid / Overdue'}
-                      </p>
-                      <p className={`text-sm ${member.annualFeePaid ? 'text-green-600' : 'text-red-600'}`}>
-                        Valid until: {member.feeValidityDate}
-                      </p>
-                    </div>
-                  </div>
+                  {(() => {
+                    const isAnnualFeeExpired = member.annualFeeExpiryDate ? new Date(member.annualFeeExpiryDate) < new Date() : false;
+                    const isPaid = member.annualFeePaid && !isAnnualFeeExpired;
+                    
+                    return (
+                      <div className={`flex items-center p-6 rounded-xl border ${isPaid ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                        {isPaid ? (
+                          <CheckCircle className="w-8 h-8 text-green-500 mr-4" />
+                        ) : (
+                          <AlertCircle className="w-8 h-8 text-red-500 mr-4" />
+                        )}
+                        <div>
+                          <p className={`text-lg font-bold ${isPaid ? 'text-green-700' : 'text-red-700'}`}>
+                            {member.annualFeePaid 
+                              ? (isAnnualFeeExpired ? 'EXPIRED' : 'Paid') 
+                              : 'Unpaid / Overdue'}
+                          </p>
+                          <p className={`text-sm ${isPaid ? 'text-green-600' : 'text-red-600'}`}>
+                            Expires on: {member.annualFeeExpiryDate || 'N/A'}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Personal Details */}

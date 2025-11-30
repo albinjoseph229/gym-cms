@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       body.name,
       body.price.toString(),
       body.durationDays.toString(),
-      body.benefits || ''
+      Array.isArray(body.benefits) ? body.benefits.join(', ') : (body.benefits || '')
     ];
 
     const success = await appendSheetData('Plans!A:E', [newPackage]);
@@ -38,9 +38,8 @@ export async function POST(request: Request) {
     if (success) {
       return NextResponse.json({ success: true, id });
     } else {
-      return NextResponse.json({ success: true, id, warning: 'Mock mode: Data not saved' });
+      return NextResponse.json({ success: false, error: 'Failed to save to sheet' }, { status: 500 });
     }
-    return NextResponse.json({ error: 'Failed to add package' }, { status: 500 });
   } catch (error) {
     console.error('Error adding package:', error);
     return NextResponse.json({ error: 'Failed to add package' }, { status: 500 });

@@ -1,48 +1,33 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useAdmin } from '@/context/AdminContext';
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
+import { Member } from '@/types';
 
-export default function AddMemberPage() {
+export default function EditMemberPage() {
   const router = useRouter();
-  const { addMember, packages, branches } = useAdmin();
+  const params = useParams();
+  const { members, updateMember, packages, branches, loading: contextLoading } = useAdmin();
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    mobileNumber: '',
-    dateOfBirth: '',
-    branchName: '',
-    currentPlan: '',
-    planStartDate: new Date().toISOString().split('T')[0],
-    planExpiryDate: '',
-    annualFeePaid: false,
-    planFeePaid: false,
-    planFee: 0,
-    feeValidityDate: '',
-    annualFeeExpiryDate: '',
-    annualFeeAmount: 0,
-    profilePhotoUrl: '',
-  });
+  const [formData, setFormData] = useState<Member | null>(null);
 
-  // Set default branch and plan when data loads
   useEffect(() => {
-    if (branches.length > 0 && !formData.branchName) {
-      setFormData(prev => ({ ...prev, branchName: branches[0].name }));
+    if (members.length > 0 && params.id) {
+      const member = members.find(m => m.id === params.id);
+      if (member) {
+        setFormData(member);
+      } else {
+        // Handle not found or fetch individual if needed (but context should have it)
+        // For now, redirect if not found after loading
+        if (!contextLoading) {
+           // router.push('/admin/dashboard/members');
+        }
+      }
     }
-    if (packages.length > 0 && !formData.currentPlan) {
-      const firstPackage = packages[0];
-      setFormData(prev => ({ 
-        ...prev, 
-        currentPlan: firstPackage.name,
-        planExpiryDate: calculateExpiry(prev.planStartDate, firstPackage.durationDays),
-        planFee: firstPackage.price
-      }));
-    }
-  }, [branches, packages]);
+  }, [members, params.id, contextLoading, router]);
 
   const calculateExpiry = (startDate: string, days: number) => {
     if (!startDate || !days) return '';
@@ -52,9 +37,11 @@ export default function AddMemberPage() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    if (!formData) return;
     const { name, value, type } = e.target;
     
     setFormData(prev => {
+      if (!prev) return null;
       const newData = {
         ...prev,
         [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
@@ -87,20 +74,16 @@ export default function AddMemberPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData) return;
     setLoading(true);
 
     try {
-      const success = await addMember({
-        ...formData,
-        remainingDays: 0, // Will be calculated by backend or context if needed
-        registrationDate: new Date().toISOString().split('T')[0],
-        qrCodeUrl: '',
-      });
+      const success = await updateMember(formData);
 
       if (success) {
         router.push('/admin/dashboard/members');
       } else {
-        alert('Failed to add member');
+        alert('Failed to update member');
       }
     } catch (error) {
       console.error(error);
@@ -110,13 +93,17 @@ export default function AddMemberPage() {
     }
   };
 
+  if (contextLoading || !formData) {
+    return <div className="text-white">Loading member details...</div>;
+  }
+
   return (
     <div>
       <div className="flex items-center mb-8">
         <Link href="/admin/dashboard/members" className="mr-4 p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors">
           <ChevronLeft className="w-5 h-5" />
         </Link>
-        <h1 className="text-3xl font-bold">Add New Member</h1>
+        <h1 className="text-3xl font-bold">Edit Member</h1>
       </div>
 
       <div className="bg-gray-800 rounded-xl border border-gray-700 p-8 max-w-4xl">
@@ -222,7 +209,7 @@ export default function AddMemberPage() {
                 type="checkbox" 
                 name="planFeePaid"
                 id="planFeePaid"
-                checked={formData.planFeePaid}
+                checked={formData.planFeePaid || false}
                 onChange={handleChange}
                 className="w-5 h-5 text-primary rounded border-gray-600 focus:ring-primary bg-gray-900"
               />
@@ -234,7 +221,7 @@ export default function AddMemberPage() {
               <input 
                 type="number" 
                 name="planFee"
-                value={formData.planFee}
+                value={formData.planFee || 0}
                 onChange={handleChange}
                 className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
               />
@@ -270,7 +257,7 @@ export default function AddMemberPage() {
                   <input 
                     type="date" 
                     name="annualFeeExpiryDate" 
-                    value={formData.annualFeeExpiryDate}
+                    value={formData.annualFeeExpiryDate || ''}
                     onChange={handleChange}
                     className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
                   />
@@ -281,7 +268,7 @@ export default function AddMemberPage() {
                   <input 
                     type="number" 
                     name="annualFeeAmount" 
-                    value={formData.annualFeeAmount}
+                    value={formData.annualFeeAmount || 0}
                     onChange={handleChange}
                     className="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary"
                   />
@@ -308,7 +295,7 @@ export default function AddMemberPage() {
               disabled={loading}
               className="bg-primary hover:bg-red-600 text-white px-8 py-3 rounded-lg font-bold transition-colors disabled:opacity-50"
             >
-              {loading ? 'Saving...' : 'Add Member'}
+              {loading ? 'Saving...' : 'Update Member'}
             </button>
           </div>
         </form>

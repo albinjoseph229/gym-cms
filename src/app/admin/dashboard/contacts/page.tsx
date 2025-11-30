@@ -1,23 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Mail, Phone, MapPin, Calendar } from 'lucide-react';
-import { ContactSubmission } from '@/types';
+import { Mail, Phone, MapPin, Calendar, Trash2 } from 'lucide-react';
+import { useAdmin } from '@/context/AdminContext';
 
 export default function ContactRequestsPage() {
-  const [contacts, setContacts] = useState<ContactSubmission[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { contacts, loading, deleteContact } = useAdmin();
 
-  useEffect(() => {
-    // Mock data since we don't have a GET endpoint for contacts yet (only POST)
-    // In real app, we'd fetch from sheet
-    const mockContacts: ContactSubmission[] = [
-      { id: '1', name: 'Alice Green', email: 'alice@example.com', phone: '9876543210', branch: 'Valad', message: 'I want to join the yoga class.', date: '2023-10-25' },
-      { id: '2', name: 'Bob White', email: 'bob@example.com', phone: '9876543211', branch: 'Korome', message: 'What are the yearly plan benefits?', date: '2023-10-26' },
-    ];
-    setContacts(mockContacts);
-    setLoading(false);
-  }, []);
+  if (loading) {
+    return <div className="text-white">Loading...</div>;
+  }
+
+  const handleDelete = async (id: string) => {
+    if (confirm('Are you sure you want to delete this contact request?')) {
+      await deleteContact(id);
+    }
+  };
 
   return (
     <div>
@@ -33,6 +30,7 @@ export default function ContactRequestsPage() {
                 <th className="px-6 py-3">Contact</th>
                 <th className="px-6 py-3">Branch</th>
                 <th className="px-6 py-3">Message</th>
+                <th className="px-6 py-3">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700">
@@ -55,6 +53,15 @@ export default function ContactRequestsPage() {
                     <span className="bg-primary/20 text-primary px-2 py-1 rounded text-xs font-bold uppercase">{contact.branch}</span>
                   </td>
                   <td className="px-6 py-4 text-gray-400 max-w-xs truncate">{contact.message}</td>
+                  <td className="px-6 py-4">
+                    <button 
+                      onClick={() => handleDelete(contact.id)}
+                      className="text-red-400 hover:text-red-300 transition-colors p-2 hover:bg-red-400/10 rounded-lg"
+                      title="Delete Request"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>

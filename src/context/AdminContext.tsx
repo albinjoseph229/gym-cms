@@ -17,6 +17,7 @@ interface AdminContextType {
   
   // CRUD Actions (Optimistic)
   addMember: (member: Omit<Member, 'id'>) => Promise<boolean>;
+  updateMember: (member: Member) => Promise<boolean>;
   deleteMember: (id: string) => Promise<boolean>;
   addTrainer: (trainer: Omit<Trainer, 'id'>) => Promise<boolean>;
   updateTrainer: (trainer: Trainer) => Promise<boolean>;
@@ -27,6 +28,7 @@ interface AdminContextType {
   deleteGalleryItem: (id: string) => Promise<boolean>;
   addBranch: (branch: Omit<Branch, 'id'>) => Promise<boolean>;
   deleteBranch: (id: string) => Promise<boolean>;
+  deleteContact: (id: string) => Promise<boolean>;
 }
 
 const AdminContext = createContext<AdminContextType>({
@@ -41,6 +43,7 @@ const AdminContext = createContext<AdminContextType>({
   lastSynced: null,
   refreshData: async () => {},
   addMember: async () => false,
+  updateMember: async () => false,
   deleteMember: async () => false,
   addTrainer: async () => false,
   updateTrainer: async () => false,
@@ -51,6 +54,7 @@ const AdminContext = createContext<AdminContextType>({
   deleteGalleryItem: async () => false,
   addBranch: async () => false,
   deleteBranch: async () => false,
+  deleteContact: async () => false,
 });
 
 export const useAdmin = () => useContext(AdminContext);
@@ -70,12 +74,13 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
   const fetchData = useCallback(async () => {
     setIsSyncing(true);
     try {
-      const [membersRes, trainersRes, packagesRes, galleryRes, branchesRes] = await Promise.all([
+      const [membersRes, trainersRes, packagesRes, galleryRes, branchesRes, contactsRes] = await Promise.all([
         fetch('/api/members'),
         fetch('/api/trainers'),
         fetch('/api/packages'),
         fetch('/api/gallery'),
         fetch('/api/branches'),
+        fetch('/api/contact'),
       ]);
 
       if (membersRes.ok) setMembers(await membersRes.json());
@@ -83,6 +88,7 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
       if (packagesRes.ok) setPackages(await packagesRes.json());
       if (galleryRes.ok) setGallery(await galleryRes.json());
       if (branchesRes.ok) setBranches(await branchesRes.json());
+      if (contactsRes.ok) setContacts(await contactsRes.json());
       
       setLastSynced(new Date());
     } catch (error) {
@@ -127,6 +133,32 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
       console.error(error);
       // 4. Revert on Failure
       setMembers(prev => prev.filter(m => m.id !== tempId));
+      setIsSyncing(false);
+      return false;
+    }
+  };
+
+  const updateMember = async (memberData: Member) => {
+    const previousMembers = [...members];
+    setMembers(prev => prev.map(m => m.id === memberData.id ? memberData : m));
+    setIsSyncing(true);
+
+    try {
+      const res = await fetch('/api/members', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(memberData)
+      });
+
+      if (res.ok) {
+        await fetchData();
+        return true;
+      } else {
+        throw new Error('Failed to update member');
+      }
+    } catch (error) {
+      console.error(error);
+      setMembers(previousMembers);
       setIsSyncing(false);
       return false;
     }
@@ -382,13 +414,35 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const deleteContact = async (id: string) => {
+    const previousContacts = [...contacts];
+    setContacts(prev => prev.filter(c => c.id !== id));
+    setIsSyncing(true);
+
+    try {
+      const res = await fetch(`/api/contact?id=${id}`, { method: 'DELETE' });
+      
+      if (res.ok) {
+        await fetchData();
+        return true;
+      } else {
+        throw new Error('Failed to delete contact');
+      }
+    } catch (error) {
+      console.error(error);
+      setContacts(previousContacts);
+      setIsSyncing(false);
+      return false;
+    }
+  };
+
   return (
     <AdminContext.Provider value={{
       members, trainers, packages, gallery, branches, contacts,
       loading, isSyncing, lastSynced, refreshData: fetchData,
-      addMember, deleteMember, addTrainer, updateTrainer, deleteTrainer, 
+      addMember, deleteMember, updateMember, addTrainer, updateTrainer, deleteTrainer, 
       addPackage, deletePackage, addGalleryItem, deleteGalleryItem, 
-      addBranch, deleteBranch
+      addBranch, deleteBranch, deleteContact
     }}>
       {children}
     </AdminContext.Provider>
